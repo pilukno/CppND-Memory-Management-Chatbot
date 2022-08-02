@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <ctime>
 
+#include <wx/filename.h>
+#include <wx/colour.h>
+#include <wx/image.h>
+
 #include "chatlogic.h"
 #include "graphnode.h"
 #include "graphedge.h"
@@ -39,6 +43,7 @@ ChatBot::~ChatBot()
     {
         delete _image;
         _image = NULL;
+    //    std::cout << "destroying image" << std::endl;
     }
 }
 
