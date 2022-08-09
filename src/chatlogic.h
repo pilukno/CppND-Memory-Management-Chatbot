@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include "chatgui.h"
+#include <iostream>
+#include <memory>
 
 // forward declarations
 class ChatBot;
@@ -13,15 +15,8 @@ class GraphNode;
 class ChatLogic
 {
 private:
-    //// STUDENT CODE
-    ////
-
-    // data handles (owned)
-    std::vector<GraphNode *> _nodes;
-    std::vector<GraphEdge *> _edges;
-
-    ////
-    //// EOF STUDENT CODE
+    // data handle (owned)
+    std::vector<std::unique_ptr<GraphNode>> _nodes; //nodes are exclusive owned by chatlogic
 
     // data handles (not owned)
     GraphNode *_currentNode;

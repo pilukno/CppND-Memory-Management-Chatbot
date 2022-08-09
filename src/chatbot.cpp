@@ -6,6 +6,7 @@
 #include <wx/filename.h>
 #include <wx/colour.h>
 #include <wx/image.h>
+#include <stdlib.h>
 
 #include "chatlogic.h"
 #include "graphnode.h"
@@ -19,6 +20,7 @@ ChatBot::ChatBot()
     _image = nullptr;
     _chatLogic = nullptr;
     _rootNode = nullptr;
+    _currentNode = nullptr;
 }
 
 // constructor WITH memory allocation
@@ -29,6 +31,7 @@ ChatBot::ChatBot(std::string filename)
     // invalidate data handles
     _chatLogic = nullptr;
     _rootNode = nullptr;
+    _currentNode = nullptr;
 
     // load image into heap memory
     _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
@@ -43,15 +46,99 @@ ChatBot::~ChatBot()
     {
         delete _image;
         _image = NULL;
-    //    std::cout << "destroying image" << std::endl;
     }
 }
 
-//// STUDENT CODE
-////
+// Copy constructor WITH memory allocation
+ChatBot::ChatBot(const ChatBot &source)
+{
+    std::cout << "ChatBot Copy Constructor" << std::endl;
+    
+    //Copy handles by reference
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
 
-////
-//// EOF STUDENT CODE
+    //Copy and load image into heap memory
+    _image = new wxBitmap();
+    *_image = *source._image;
+}
+
+// Copy assignment constructor WITH memory allocation
+ChatBot &ChatBot::operator=(const ChatBot &source)
+    {  
+    std::cout << "ChatBot Copy Assignment" << std::endl; 
+    
+    //returning this chatbot in case source is the same
+    if(this == &source){
+        return *this;
+    } 
+
+    // Copy handles by reference
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
+
+    //Deallocate heap memory
+    if(_image != NULL){
+        delete _image;
+    }
+
+    //Copy and load image to heap memory
+    _image = new wxBitmap();
+    *_image = *source._image;
+
+    return *this;
+}  
+
+//Move constructor WITH memory allocation
+ChatBot::ChatBot(ChatBot &&source)
+{
+    std::cout << "ChatBot Move Constructor" << std::endl;
+
+    //copy handles by reference
+    _image = source._image;
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
+
+    //set chatbot to new _chatlogic
+    _chatLogic->SetChatbotHandle(this); //WARNING: note that if this is not set we have a problem with chatgui provoking a segmentation fault.
+
+    //invalidate source handles to avoid memory leaks
+    source._image = NULL;
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
+    source._currentNode = nullptr;
+}          
+
+//Move assignment constructor WITH memory allocation
+ChatBot &ChatBot::operator=(ChatBot &&source)
+{
+    std::cout << "ChatBot Move Assignment" << std::endl;
+
+    if(this == &source){
+        return *this;
+    }
+
+   //Move/copy handles by reference
+    _image = source._image;
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
+
+    //set this new chatbot to the new chatlogic
+    _chatLogic->SetChatbotHandle(this);  //WARNING: note that if this is not set we have a problem with chatgui provoking a segmentation fault.
+
+    //invalidating source handles
+    source._image = NULL;
+    source._chatLogic = nullptr;
+    source._rootNode = nullptr;
+    source._currentNode = nullptr;
+
+    return *this;
+}
+
 
 void ChatBot::ReceiveMessageFromUser(std::string message)
 {
